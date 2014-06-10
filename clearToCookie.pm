@@ -13,7 +13,7 @@ our @ISA = qw(Exporter);
 # Version:  20140610-1630
 #
 
-use constant permissionCookieName=>'clearToCookie_';
+use constant permissionCookieName=>'permissionToCookie_';
 use constant actionSetCookie=>'cookieSet';
 
 our $cookiesOK; # the master cookie-ing flag
