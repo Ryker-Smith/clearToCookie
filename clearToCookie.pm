@@ -10,11 +10,13 @@ our @ISA = qw(Exporter);
 #
 # Sources:  http://perldoc.perl.org/CGI/Cookie.html#Recovering-Previous-Cookies
 #           http://www.gaumina.ie/irish-cookie-law-policies/
+# Version:  20140610-1630
+#
 
 use constant permissionCookieName=>'clearToCookie_';
 use constant actionSetCookie=>'cookieSet';
 
-our $cookiesOK; # the master cookieing flag
+our $cookiesOK; # the master cookie-ing flag
 
 our $standardCookieMsg="This site uses cookies. By continuing to use this site you are agreeing to this policy.";
 our $standardReturnTo=<<_returnToHereCode;
@@ -23,6 +25,41 @@ our $standardReturnTo=<<_returnToHereCode;
   <input type="submit" value="dismiss">
   </form>
 _returnToHereCode
+our $cookieStyle=<<____cookieStyle0;
+    <style>
+    #cookieCheck{
+      background: #ff3728;
+      position: absolute;
+      z-index: 100;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 25px;
+      font-size: 14px/21px;
+      padding-top: 4px;
+      font-family: Franklin, Sans serif;
+      color: white;
+      text-align: center;
+    }
+    </style>
+____cookieStyle0
+
+sub cookieLegalBit {
+  # are we setting cookies?
+  my $action=shift;
+  my $thisDomain=shift;
+  if ($action eq actionSetCookie) {
+    cookieSet($thisDomain, 1);
+  }
+  else {
+    # test for IE/EU cookie permission
+    if (cookieCheck($thisDomain) == 0) {
+      return cookieMsg();
+    }
+  }
+  # return nothing if we get this far (could be left out)
+  return;
+} # sub cookieLegalBit
 
 sub cookieCheck {
 # most basic test, is there a permissions cookie?
@@ -92,22 +129,7 @@ sub cookieMsg {
     }
     # now print the top banner
     my $text= <<____cookieCheck0;
-    <style>
-    #cookieCheck{
-      background: #ff3728;
-      position: absolute;
-      z-index: 100;
-      top: 0px;
-      left: 0px;
-      width: 100%;
-      height: 25px;
-      font-size: 14px/21px;
-      padding-top: 4px;
-      font-family: Franklin, Sans serif;
-      color: white;
-      text-align: center;
-    }
-    </style>
+    $cookieStyle
     <div id="cookieCheck">
     $myCookieMsg
     $myReturnTo
@@ -121,7 +143,18 @@ sub cookieReturnTo {
   return $env{REQUEST_URI};
 } #sub cookieReturnTo
 
-our @EXPORT_OK= qw (&cookieCheck &cookieMsg &cookieSet &cookieReturnTo $standardCookieMsg $cookiesOK permissionCookieName actionSetCookie);
+our @EXPORT_OK= qw (
+                    &cookieLegalBit
+                    &cookieCheck
+                    &cookieMsg 
+                    &cookieSet 
+                    &cookieReturnTo 
+                    $standardCookieMsg 
+                    $cookiesOK
+                    $cookieStyle
+                    permissionCookieName 
+                    actionSetCookie
+                   );
 
 our %EXPORT_TAGS = (all => [@EXPORT_OK]);
 
