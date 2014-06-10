@@ -4,7 +4,7 @@ use CGI::Cookie;
 require Exporter;
 our @ISA = qw(Exporter);
 
-# Author: faROE
+# Author: Fachtna Roe
 # Date: 2014
 # Purpose:  Utility/demonstration/test of cookieing module
 #
@@ -45,7 +45,10 @@ our $cookieStyle=<<____cookieStyle0;
 ____cookieStyle0
 
 sub cookieLegalBit {
-  # are we setting cookies?
+# Purpose:  are we setting cookies? Handle the decision
+# Expects:  action parameter
+#           domain string
+# Returns:  the cookieMsg or nothing
   my $action=shift;
   my $thisDomain=shift;
   if ($action eq actionSetCookie) {
@@ -62,6 +65,9 @@ sub cookieLegalBit {
 } # sub cookieLegalBit
 
 sub cookieCheck {
+# Purpose:  Is there a permission cookie
+# Expects:  domain string
+# Returns:  1/0 present/not present - ALSO sets $cookiesOK global var
 # most basic test, is there a permissions cookie?
   my %cookies = CGI::Cookie->fetch;
   my $domain=shift;
@@ -88,7 +94,11 @@ sub cookieCheck {
 } # sub cookieCheck
 
 sub cookieSet {
-# set cookie to say yes/no cookieing in future
+# Purpose:  set cookie to say yes/no cookieing in future
+# Expects:  domain string
+#           Optional: permission value 1/0, defaults to 0
+# Returns:  -
+# 
   my $domain=shift;
   my $permissionValue=shift;
   my $expiryTime='+1M'; #default value, must give option to change this
@@ -108,7 +118,11 @@ sub cookieSet {
 } # sub cookieSet
 
 sub cookieMsg {
-# Warning msg about cookies
+# Purpose:  Warning msg about cookies
+# Expects:  Optional: custom cookie message
+#           Optional: a different URI to return to
+# Returns:  Cookie warning msg, with own CSS
+
     # first see if custom msg present
     my $myCookieMsg=shift;
     if ($myCookieMsg eq "") {
@@ -135,14 +149,19 @@ sub cookieMsg {
     $myReturnTo
     </div>
 ____cookieCheck0
+    return $text;
   # done
 } # sub cookieMsg
 
 sub cookieReturnTo {
+# Purpose:  Get the requesting URI to enable return to same location via CGI
+# Expects:  -
+# Returns:  URI within site
   my %env = %ENV;
   return $env{REQUEST_URI};
 } #sub cookieReturnTo
 
+# prepare for export
 our @EXPORT_OK= qw (
                     &cookieLegalBit
                     &cookieCheck
@@ -155,7 +174,8 @@ our @EXPORT_OK= qw (
                     permissionCookieName 
                     actionSetCookie
                    );
-
+# export useing tag 'all'
+# in calling program: use clearToCookie ":all";
 our %EXPORT_TAGS = (all => [@EXPORT_OK]);
 
-return 1;
+return 1; # true
