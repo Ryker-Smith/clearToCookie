@@ -2,3 +2,21 @@ clearToCookie.pm
 Fachtna Roe, 2014
 
 Simple perl module to notify site visitors that cookies will be stored.
+
+In calling program use:
+use clearToCookie ":all";
+to access the routines.
+
+>Routines:
+cookieLegalBit 	... called from main prog to do everything
+cookieCheck 	... is there a cookie present?
+cookieMsg	... prepares and prints the cookie banner 
+cookieSet	... sets the cookie
+cookieReturnTo	... gets the calling path from the URI
+>Variables
+$standardCookieMsg	...	Can be changed
+$cookiesOK		...	1/0 - available in main prog for later use
+$cookieStyle		...	CSS for cookie bar. Can be changed
+>Constants
+permissionCookieName	...	Name of the cookie
+actionSetCookie		...	Using CGI/action architecture: this string is the expected action parameter
